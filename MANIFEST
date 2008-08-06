@@ -1,7 +1,9 @@
 t/01-simple.t
 t/02-compose.t
+t/03-pos.t
 t/99-pod-coverage.t
 t/99-pod.t
+t/data/QuotePos.pm
 t/data/QuoteSQL.pm
 t/data/QuoteEval.pm
 inc/Module/AutoInstall.pm

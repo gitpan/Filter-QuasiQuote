@@ -4,7 +4,7 @@ require Filter::QuasiQuote;
 our @ISA = qw( Filter::QuasiQuote );
 
 sub sql {
-    my ($self, $file, $line, $s) = @_;
+    my ($self, $s, $file, $line, $col) = @_;
     my $package = ref $self;
     #warn "SQL: $file: $line: $s\n";
     $s =~ s/\n+/ /g;

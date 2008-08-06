@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 9;
+use Test::More tests => 10;
 
 use lib 'lib';
 use t::data::QuoteSQL;
@@ -32,6 +32,11 @@ is([:sql|select 1|] . [:sql|select 2|], 'select 1select 2', 'two quotes on a sin
 is([:sql|select 1|] . [:sql|select 2|] . [:sql|select 3|], 'select 1select 2select 3', '3 quotes on a single line');
 is([:sql|select 1|] . [:sql|select 2|] . [:sql|select
     3|], "select 1select 2select    3", '3 quotes spanning 2 lines');
+
 is([:sql|select 1|] . [:sql|select 2|] . [:sql|select
     3|] . [:sql|select 4|], "select 1select 2select    3select 4", '4 quotes spanning 2 lines');
+
+is([:sql|select 1|] . [:sql|select 2|] . [:sql|select
+    3|] . [:sql|select
+    4|], "select 1select 2select    3select    4", '4 quotes spanning 3 lines');
 

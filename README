@@ -2,7 +2,7 @@ NAME
     Filter::QuasiQuote - Quasiquoting for Perl
 
 VERSION
-    This document describes Filter::QuasiQuote 0.01 released on August 5,
+    This document describes Filter::QuasiQuote 0.02 released on August 6,
     2008.
 
 SYNOPSIS
@@ -12,7 +12,7 @@ SYNOPSIS
         our @ISA = qw( Filter::QuasiQuote );
 
         sub my_filter {
-            my ($self, $file, $line, $s) = @_;
+            my ($self, $s, $file, $line, $col) = @_;
             # parse the dsl source in $s and emit the perl source in ONE LINE
             return generate_perl_source( parse_dsl( $s ) );
         }
@@ -52,7 +52,7 @@ EXAMPLES
             our @ISA = qw( Filter::QuasiQuote );
 
             sub sql {
-                my ($self, $file, $line, $s) = @_;
+                my ($self, $s, $file, $line, $col) = @_;
                 my $package = ref $self;
                 #warn "SQL: $file: $line: $s\n";
                 $s =~ s/\n+/ /g;
@@ -90,6 +90,18 @@ EXAMPLES
             my $sql =
                 "select id, title from posts where id = ".quote($id);
 
+INTERNAL METHODS
+    The following methods are internal and are not intended to call
+    directly.
+
+    debug
+        Used to print debug info to stderr when $Filter::QuasiQuote::Debug
+        is set to 1.
+
+    filter
+        Main filter function which is usually inherited by concrete filter
+        subclasses.
+
 CAVEATS
     Subclasses of "Filter::QuasiQuote" should NOT use it directly. For
     example, the following will break things:
@@ -110,11 +122,20 @@ BUGS
 
     <http://rt.cpan.org/NoAuth/Bugs.html?Dist=Filter-QuasiQuote>.
 
+VERSION CONTROL
+    For the very latest version of this module, check out the source from
+    the SVN repos below:
+
+    <http://svn.openfoundry.org/filterquote>
+
+    There is anonymous access to all. If you'd like a commit bit, please let
+    me know. :)
+
 AUTHOR
     Agent Zhang "<agentzh@yahoo.cn>"
 
 COPYRIGHT AND LICENSE
-    Copyright (c) 2008 by Agent Zhang (章亦春)
+    Copyright (c) 2008 by Agent Zhang (agentzh).
 
     This software is released under the MIT license cited below. The "MIT"
     License
@@ -139,6 +160,9 @@ COPYRIGHT AND LICENSE
     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 SEE ALSO
-    <http://www.eecs.harvard.edu/~mainland/ghc-quasiquoting/>,
-    Filter::Util::Call, Filter::Simple, Module::Compile.
+    Quasiquoting support in Haskell (via GHC)
+        <http://www.eecs.harvard.edu/~mainland/ghc-quasiquoting/>,
+
+    Related CPAN modules
+        Filter::Util::Call, Filter::Simple, Module::Compile.
 

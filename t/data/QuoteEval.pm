@@ -4,7 +4,7 @@ require Filter::QuasiQuote;
 our @ISA = qw( Filter::QuasiQuote );
 
 sub eval {
-    my ($self, $file, $line, $s) = @_;
+    my ($self, $s, $file, $line, $col) = @_;
     $s = eval($s);
     return '"' . quotemeta($s) . '"';
 }

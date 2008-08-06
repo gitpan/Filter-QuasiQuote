@@ -4,7 +4,7 @@ use strict;
 no warnings;
 #use Smart::Comments;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use Filter::Util::Call qw(filter_read);
 
@@ -21,6 +21,7 @@ sub import {
         quoted => undef,
         method => undef,
         ignore_once => undef,
+        pos_diff => 0,
     }, $type;
     Filter::Util::Call::real_import($self, $package, 0) ;
 }
@@ -34,6 +35,7 @@ sub filter {
     #warn scalar(s/\r//g);
     my $changed;
     if ($status > 0) {
+        $self->{pos_diff} = 0;
         $self->{line}++;
         my ($i, $buf);
         while (1) {
@@ -53,10 +55,13 @@ sub filter {
                 #warn "to: $to\n";
                 #warn "len: $len\n";
                 if ($self->can($meth)) {
-                    my $res = $self->$meth($self->{file}, $self->{line}, $s);
+                    #warn "POS diff: $self->{pos_diff}";
+                    my $col = $to - $self->{pos_diff} - $len + 1;
+                    my $res = $self->$meth($s, $self->{file}, $self->{line}, $col);
                     #$self->debug("Pos BEFORE change \$_: ", pos($_));
                     substr($_, $to - $len, $len, $res);
                     $changed = 1; pos($_) = $to - $len + length($res);
+                    $self->{pos_diff} = length($res) - $len;
                     #$self->debug("Pos AFTER change \$_: ", pos($_));
                     ### $_
                 }
@@ -75,6 +80,8 @@ sub filter {
 
                 substr($_, $to - $len, $len, ' ');
                 $changed = 1;
+                my $col = $to - $self->{pos_diff} - $len + 1;
+                $self->{saved_pos} = [$self->{line}, $col];
                 ### $_
 
                 if (!defined $self->{method}) {
@@ -104,11 +111,18 @@ sub filter {
                     #warn "POS: ", pos;
                     die ref $self, ": Syntax error at $self->{file}, line $self->{line}: Pending closing quasiquote. (pos $to, pass $i)\n";
                 }
-                my $res = $self->$meth($self->{file}, $self->{line}, $self->{quoted} . $s);
+                #warn "POS diff: $self->{pos_diff}";
+                my $pos = $self->{saved_pos};
+                my ($line, $col);
+                if (!$pos) { $line = $self->{line}; $col = 0 }
+                else { ($line, $col) = @$pos }
+                my $res = $self->$meth($self->{quoted} . $s, $self->{file}, $line, $col);
                 undef $self->{method};
                 undef $self->{quoted};
                 substr($_, $to - $len, $len, $res);
                 $changed = 1; pos($_) = $to - $len + length($res);
+                $self->{pos_diff} = length($res) - $len;
+
                 #$changed = 1;
             }
             elsif (/\G./gc) {
@@ -139,15 +153,13 @@ sub debug {
 1;
 __END__
 
-=encoding utf8
-
 =head1 NAME
 
 Filter::QuasiQuote - Quasiquoting for Perl
 
 =head1 VERSION
 
-This document describes Filter::QuasiQuote 0.01 released on August 5, 2008.
+This document describes Filter::QuasiQuote 0.02 released on August 6, 2008.
 
 =head1 SYNOPSIS
 
@@ -157,7 +169,7 @@ This document describes Filter::QuasiQuote 0.01 released on August 5, 2008.
     our @ISA = qw( Filter::QuasiQuote );
 
     sub my_filter {
-        my ($self, $file, $line, $s) = @_;
+        my ($self, $s, $file, $line, $col) = @_;
         # parse the dsl source in $s and emit the perl source in ONE LINE
         return generate_perl_source( parse_dsl( $s ) );
     }
@@ -203,7 +215,7 @@ The concrete filter class could be defined as follows:
     our @ISA = qw( Filter::QuasiQuote );
 
     sub sql {
-        my ($self, $file, $line, $s) = @_;
+        my ($self, $s, $file, $line, $col) = @_;
         my $package = ref $self;
         #warn "SQL: $file: $line: $s\n";
         $s =~ s/\n+/ /g;
@@ -243,6 +255,22 @@ which is actually equivalent to
 
 =back
 
+=head1 INTERNAL METHODS
+
+The following methods are internal and are not intended to call directly.
+
+=over
+
+=item debug
+
+Used to print debug info to stderr when C<$Filter::QuasiQuote::Debug> is set to 1.
+
+=item filter
+
+Main filter function which is usually inherited by concrete filter subclasses.
+
+=back
+
 =head1 CAVEATS
 
 Subclasses of C<Filter::QuasiQuote> should NOT use it directly. For example, the following will break things:
@@ -268,13 +296,23 @@ Please report bugs or send wish-list to the CPAN RT site:
 
 L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Filter-QuasiQuote>.
 
+=head1 VERSION CONTROL
+
+For the very latest version of this module, check out the source from
+the SVN repos below:
+
+L<http://svn.openfoundry.org/filterquote>
+
+There is anonymous access to all. If you'd like a commit bit, please let
+me know. :)
+
 =head1 AUTHOR
 
 Agent Zhang C<< <agentzh@yahoo.cn> >>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (c) 2008 by Agent Zhang (章亦春)
+Copyright (c) 2008 by Agent Zhang (agentzh).
 
 This software is released under the MIT license cited below.
 The "MIT" License
@@ -287,6 +325,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 =head1 SEE ALSO
 
+=over
+
+=item Quasiquoting support in Haskell (via GHC)
+
 L<http://www.eecs.harvard.edu/~mainland/ghc-quasiquoting/>,
+
+=item Related CPAN modules
+
 L<Filter::Util::Call>, L<Filter::Simple>, L<Module::Compile>.
+
+=back
 
