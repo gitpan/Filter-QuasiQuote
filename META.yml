@@ -18,4 +18,4 @@ no_index:
 requires:
   Filter::Util::Call: 1.07
   perl: 5.6.1
-version: 0.02
+version: 0.03
