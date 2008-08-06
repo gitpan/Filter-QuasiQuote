@@ -4,7 +4,7 @@ use strict;
 no warnings;
 #use Smart::Comments;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 use Filter::Util::Call qw(filter_read);
 
@@ -159,7 +159,7 @@ Filter::QuasiQuote - Quasiquoting for Perl
 
 =head1 VERSION
 
-This document describes Filter::QuasiQuote 0.03 released on August 6, 2008.
+This document describes Filter::QuasiQuote 0.04 released on August 6, 2008.
 
 =head1 SYNOPSIS
 

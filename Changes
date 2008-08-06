@@ -1,7 +1,7 @@
 Changes for Filter::QuasiQuote releases
 =======================================
 
-0.03 - Aug 6, 2008
+0.04 - Aug 6, 2008
 * Changed the filter method API. The argument list is now:
     $source, $filename, $line_number, $col_number
 * No longer use utf8 encoding in the POD due to the failure in some peculiar systems w/o utf8 encoding support.
