@@ -3,7 +3,7 @@ use lib '.';
 use inc::Module::Install;
 
 name                ('Filter-QuasiQuote');
-license             ('perl');
+license             ('MIT');
 author              ('Agent Zhang <agentzh@yahoo.cn>');
 perl_version        ('5.006001');
 all_from            ('lib/Filter/QuasiQuote.pm');

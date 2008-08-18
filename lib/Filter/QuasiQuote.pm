@@ -4,7 +4,7 @@ use strict;
 no warnings;
 #use Smart::Comments;
 
-our $VERSION = '0.04';
+our $VERSION = '0.06';
 
 use Filter::Util::Call qw(filter_read);
 
@@ -125,9 +125,10 @@ sub filter {
 
                 #$changed = 1;
             }
-            elsif (/\G./gc) {
+            elsif (/\G[^\|\[]+|\G./gc) {
                 #print "Ignored: $_";
                 #last;
+                #warn $&;
                 $buf .= $&;
             }
             else {
@@ -159,7 +160,7 @@ Filter::QuasiQuote - Quasiquoting for Perl
 
 =head1 VERSION
 
-This document describes Filter::QuasiQuote 0.04 released on August 6, 2008.
+This document describes Filter::QuasiQuote 0.06 released on August 18, 2008.
 
 =head1 SYNOPSIS
 
