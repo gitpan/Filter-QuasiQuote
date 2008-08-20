@@ -2,7 +2,7 @@ NAME
     Filter::QuasiQuote - Quasiquoting for Perl
 
 VERSION
-    This document describes Filter::QuasiQuote 0.06 released on August 18,
+    This document describes Filter::QuasiQuote 0.07 released on August 20,
     2008.
 
 SYNOPSIS

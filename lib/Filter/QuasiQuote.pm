@@ -4,7 +4,7 @@ use strict;
 no warnings;
 #use Smart::Comments;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 use Filter::Util::Call qw(filter_read);
 
@@ -33,6 +33,7 @@ sub filter {
 
     $status = filter_read;
     #warn scalar(s/\r//g);
+    #warn "Last char: ", ord(substr($_, -1, 1));
     my $changed;
     if ($status > 0) {
         $self->{pos_diff} = 0;
@@ -142,6 +143,8 @@ sub filter {
         #warn "$self->{file}: line $self->{line}: $_";
     }
     $self->debug("Processed: (line $self->{line}): $_") if $changed;
+    s/\n//gs;
+    $_ .= "\n" unless substr($_, -1, 1) eq "\n";
     #warn $status;
     $status ;
 }
@@ -160,7 +163,7 @@ Filter::QuasiQuote - Quasiquoting for Perl
 
 =head1 VERSION
 
-This document describes Filter::QuasiQuote 0.06 released on August 18, 2008.
+This document describes Filter::QuasiQuote 0.07 released on August 20, 2008.
 
 =head1 SYNOPSIS
 
